@@ -1,92 +1,156 @@
-CREATE TABLE IF NOT EXISTS salones (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nombre TEXT NOT NULL
+-- 1. Tablas de Seguridad y Usuarios
+CREATE TABLE Roles (
+    ID_Rol INTEGER PRIMARY KEY AUTOINCREMENT,
+    Nombre_Rol TEXT NOT NULL UNIQUE -- e.g., 'Administrador', 'Camarero'
 );
 
-CREATE TABLE IF NOT EXISTS mesas (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    salon_id INTEGER NOT NULL,
-    nombre_visual TEXT NOT NULL, -- Ej: "Mesa 4"
-    pos_x REAL DEFAULT 0,
-    pos_y REAL DEFAULT 0,
-    ancho REAL DEFAULT 80,
-    alto REAL DEFAULT 80,
-    forma TEXT DEFAULT 'rect',   -- 'rect' o 'circle'
-    estado TEXT DEFAULT 'libre', -- 'libre', 'ocupada', 'reservada'
-    FOREIGN KEY (salon_id) REFERENCES salones (id)
+CREATE TABLE Usuarios (
+    ID_Usuario INTEGER PRIMARY KEY AUTOINCREMENT,
+    ID_Rol INTEGER NOT NULL,
+    Email TEXT NOT NULL UNIQUE,
+    Password_Hash TEXT NOT NULL,
+    Nombre TEXT NOT NULL,
+    Apellido TEXT,
+    Estado TEXT DEFAULT 'Activo',
+    FOREIGN KEY (ID_Rol) REFERENCES Roles(ID_Rol)
 );
 
-CREATE TABLE IF NOT EXISTS categorias (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nombre TEXT NOT NULL,
-    color TEXT DEFAULT '#cbd5e1', 
-    orden INTEGER DEFAULT 0
+-- 2. Tablas de Personal y Horarios (Trabajadores)
+CREATE TABLE Trabajadores (
+    ID_Trabajador INTEGER PRIMARY KEY AUTOINCREMENT,
+    ID_Usuario INTEGER UNIQUE NOT NULL, -- Relación 1:1 con Usuarios
+    DNI TEXT UNIQUE,
+    Telefono TEXT,
+    Puesto TEXT,
+    Fecha_Contratacion DATE,
+    FOREIGN KEY (ID_Usuario) REFERENCES Usuarios(ID_Usuario)
 );
 
-CREATE TABLE IF NOT EXISTS productos_finales (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    categoria_id INTEGER NOT NULL,
-    nombre TEXT NOT NULL,
-    precio REAL NOT NULL,         -- Precio final con IVA
-    iva REAL DEFAULT 0.21,        -- Cambiado a 0.21 como pediste
-    imagen TEXT,                  -- Base64 o ruta local
-    activo BOOLEAN DEFAULT 1,
-    FOREIGN KEY (categoria_id) REFERENCES categorias (id)
+CREATE TABLE Turnos (
+    ID_Turno INTEGER PRIMARY KEY AUTOINCREMENT,
+    Nombre_Turno TEXT NOT NULL, -- e.g., 'Mañana', 'Noche'
+    Hora_Inicio TIME,
+    Hora_Fin TIME
 );
 
-CREATE TABLE IF NOT EXISTS usuarios (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nombre TEXT NOT NULL,
-    rol TEXT NOT NULL,            -- 'admin', 'encargado', 'camarero'
-    pin_acceso TEXT,              -- Para login rápido
-    email TEXT,
-    telefono TEXT,
-    activo BOOLEAN DEFAULT 1
+CREATE TABLE Asignacion_Turnos (
+    ID_Asignacion INTEGER PRIMARY KEY AUTOINCREMENT,
+    ID_Trabajador INTEGER NOT NULL,
+    Fecha DATE NOT NULL,
+    ID_Turno INTEGER NOT NULL,
+    Area TEXT NOT NULL, -- 'Sala' o 'Cocina'
+    FOREIGN KEY (ID_Trabajador) REFERENCES Trabajadores(ID_Trabajador),
+    FOREIGN KEY (ID_Turno) REFERENCES Turnos(ID_Turno)
 );
 
--- Fichajes
-CREATE TABLE IF NOT EXISTS fichajes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    usuario_id INTEGER NOT NULL,
-    tipo TEXT NOT NULL,           -- 'entrada' o 'salida'
-    fecha_hora DATETIME DEFAULT CURRENT_TIMESTAMP,
-    firma_base64 TEXT,
-    -- Eliminados latitud/longitud como pediste
-    FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
+-- 3. Tablas de Inventario y Productos
+CREATE TABLE Categorias_Producto (
+    ID_Categoria INTEGER PRIMARY KEY AUTOINCREMENT,
+    Nombre TEXT NOT NULL UNIQUE
 );
 
--- --------------------------------------------------------
--- 4. ZONA DE VENTAS
--- --------------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS tickets (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    mesa_id INTEGER,
-    usuario_id INTEGER,
-    fecha_apertura DATETIME DEFAULT CURRENT_TIMESTAMP,
-    fecha_cierre DATETIME,
-    total REAL DEFAULT 0,
-    metodo_pago TEXT,
-    estado TEXT DEFAULT 'abierto',
-    FOREIGN KEY (mesa_id) REFERENCES mesas (id),
-    FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
+CREATE TABLE Productos (
+    ID_Producto INTEGER PRIMARY KEY AUTOINCREMENT,
+    ID_Categoria INTEGER NOT NULL,
+    Nombre TEXT NOT NULL,
+    Precio_Venta REAL NOT NULL,
+    Stock_Actual REAL DEFAULT 0,
+    Stock_Minimo REAL DEFAULT 0,
+    Unidad_Medida TEXT,
+    FOREIGN KEY (ID_Categoria) REFERENCES Categorias_Producto(ID_Categoria)
 );
 
--- Detalle del Ticket
-CREATE TABLE IF NOT EXISTS lineas_ticket (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    ticket_id INTEGER NOT NULL,
-    producto_id INTEGER NOT NULL,
-    cantidad INTEGER DEFAULT 1,
-    precio_unitario REAL NOT NULL,
-    nombre_producto TEXT NOT NULL,
-    nota TEXT DEFAULT NULL,
-    FOREIGN KEY (ticket_id) REFERENCES tickets (id),
-    -- CORREGIDO: Ahora apunta a 'productos_finales' en lugar de 'productos'
-    FOREIGN KEY (producto_id) REFERENCES productos_finales (id)
-); --------------------------------------------------------
+-- 4. Tablas de Reservas y Mesas
+CREATE TABLE Zonas (
+    ID_Zona INTEGER PRIMARY KEY AUTOINCREMENT,
+    Nombre_Zona TEXT NOT NULL UNIQUE -- e.g., 'Terraza', 'Principal'
+);
 
-INSERT INTO salones (nombre) VALUES ('Salón Principal');
-INSERT INTO categorias (nombre, color) VALUES ('Bebidas', '#3b82f6');
-INSERT INTO categorias (nombre, color) VALUES ('Comida', '#ef4444');
-INSERT INTO usuarios (nombre, rol, pin_acceso) VALUES ('Admin', 'admin', '0000');
+CREATE TABLE Mesas (
+    ID_Mesa INTEGER PRIMARY KEY AUTOINCREMENT,
+    ID_Zona INTEGER NOT NULL,
+    Numero_Mesa TEXT NOT NULL UNIQUE,
+    Capacidad INTEGER NOT NULL,
+    Ubicacion_X INTEGER,
+    Ubicacion_Y INTEGER,
+    FOREIGN KEY (ID_Zona) REFERENCES Zonas(ID_Zona)
+);
+
+CREATE TABLE Reservas (
+    ID_Reserva INTEGER PRIMARY KEY AUTOINCREMENT,
+    ID_Mesa INTEGER NOT NULL,
+    Fecha_Reserva DATE NOT NULL,
+    Hora_Reserva TIME NOT NULL,
+    Num_Personas INTEGER NOT NULL,
+    Nombre_Cliente TEXT NOT NULL,
+    Telefono TEXT,
+    Email TEXT,
+    Estado TEXT DEFAULT 'Confirmada', -- 'Confirmada', 'Cancelada', 'Atendida'
+    FOREIGN KEY (ID_Mesa) REFERENCES Mesas(ID_Mesa)
+);
+
+-- 5. Tablas de Clientes, Proveedores y Marketing
+CREATE TABLE Clientes (
+    ID_Cliente INTEGER PRIMARY KEY AUTOINCREMENT,
+    Nombre TEXT NOT NULL,
+    Apellido TEXT,
+    Email TEXT UNIQUE,
+    Telefono TEXT,
+    Fecha_Alta DATE,
+    Total_Gastado REAL DEFAULT 0
+);
+
+CREATE TABLE Proveedores (
+    ID_Proveedor INTEGER PRIMARY KEY AUTOINCREMENT,
+    Nombre_Empresa TEXT NOT NULL,
+    Contacto TEXT,
+    Telefono TEXT,
+    Email TEXT UNIQUE,
+    CIF TEXT UNIQUE,
+    Tipo_Producto TEXT -- e.g., 'Alimentos', 'Bebidas', 'Limpieza'
+);
+
+-- 6. Tablas de Facturación y Cuentas
+CREATE TABLE Comandas (
+    ID_Comanda INTEGER PRIMARY KEY AUTOINCREMENT,
+    ID_Mesa INTEGER NOT NULL,
+    ID_Trabajador INTEGER, -- Camarero que abre la comanda
+    Fecha_Hora_Apertura DATETIME NOT NULL,
+    Fecha_Hora_Cierre DATETIME,
+    Total_Comanda REAL DEFAULT 0,
+    Estado TEXT DEFAULT 'Abierta', -- 'Abierta', 'Pagada', 'Cancelada'
+    FOREIGN KEY (ID_Mesa) REFERENCES Mesas(ID_Mesa),
+    FOREIGN KEY (ID_Trabajador) REFERENCES Trabajadores(ID_Trabajador)
+);
+
+CREATE TABLE Detalle_Comanda (
+    ID_Detalle INTEGER PRIMARY KEY AUTOINCREMENT,
+    ID_Comanda INTEGER NOT NULL,
+    ID_Producto INTEGER NOT NULL,
+    Cantidad REAL NOT NULL,
+    Precio_Unitario REAL NOT NULL,
+    Notas TEXT,
+    FOREIGN KEY (ID_Comanda) REFERENCES Comandas(ID_Comanda),
+    FOREIGN KEY (ID_Producto) REFERENCES Productos(ID_Producto)
+);
+
+CREATE TABLE Facturas (
+    ID_Factura INTEGER PRIMARY KEY AUTOINCREMENT,
+    ID_Comanda INTEGER UNIQUE NOT NULL,
+    ID_Cliente INTEGER, -- Opcional, si el cliente pide factura
+    Fecha_Emision DATETIME NOT NULL,
+    Subtotal REAL NOT NULL,
+    IVA REAL NOT NULL,
+    Total_Pagado REAL NOT NULL,
+    Metodo_Pago TEXT, -- 'Efectivo', 'Tarjeta', 'Bizum'
+    FOREIGN KEY (ID_Comanda) REFERENCES Comandas(ID_Comanda),
+    FOREIGN KEY (ID_Cliente) REFERENCES Clientes(ID_Cliente)
+);
+
+CREATE TABLE Cuentas_Gastos (
+    ID_Gasto INTEGER PRIMARY KEY AUTOINCREMENT,
+    Fecha DATE NOT NULL,
+    Concepto TEXT NOT NULL,
+    Importe REAL NOT NULL,
+    Tipo_Gasto TEXT NOT NULL -- e.g., 'Nómina', 'Alquiler', 'Suministros'
+);

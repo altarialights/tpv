@@ -1,13 +1,12 @@
 import "./Global.css";
-
+import Layout from "./layouts/layout";
+import { Outlet } from "react-router-dom";
 function App() {
-  return (
-    <main className="bg-blue-200 text-6xl w-creen h-screen">
-      <section className="w-full h-full grid place-items-center ">
-        Proyecto inicializado + tailwind
-      </section>
-    </main>
-  );
+    return (
+        <Layout>
+            <Outlet />
+        </Layout>
+    );
 }
 
 export default App;
