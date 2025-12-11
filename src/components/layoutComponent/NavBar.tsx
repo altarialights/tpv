@@ -1,4 +1,6 @@
 import NavBarItem from "./NavBarItem";
+import { ReactComponent as MesaSVG } from '../../assets/svg/MesaSVG.svg'
+
 function NavBar({ rol }: { rol: string }) {
     if (rol == "admin") {
         return (
@@ -9,7 +11,9 @@ function NavBar({ rol }: { rol: string }) {
                     <svg></svg>
                 </header>
                 <nav>
-                    <div></div>
+                    <div>
+                        <NavBarItem pagina='Mesas' svg={MesaSVG}></NavBarItem>
+                    </div>
                     <div>
                         <div>
                             <svg></svg>

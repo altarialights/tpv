@@ -4,7 +4,7 @@ function NavBarItem({
     svg: SvgIcon,
 }: {
     pagina: string;
-    svg: React.FC;
+    svg: React.FC<React.SVGProps<SVGSVGElement>>;
 }) {
     const ruta: To = "../pages/" + pagina;
 
