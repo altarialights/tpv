@@ -6,12 +6,12 @@ function NavBarItem({
     pagina: string;
     svg: React.FC<React.SVGProps<SVGSVGElement>>;
 }) {
-    const ruta: To = "../pages/" + pagina;
+    const ruta: To = "../" + pagina;
 
     return (
         <Link to={ruta}>
             <div>
-                <SvgIcon />
+                <SvgIcon width={32} height={32} />
                 <h4>{pagina}</h4>
             </div>
         </Link>
