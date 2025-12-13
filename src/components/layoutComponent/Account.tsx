@@ -1,5 +1,3 @@
-import React from "react";
-
 function Account({ rol }: { rol: string }) {
     if (rol == "admin") {
         return (

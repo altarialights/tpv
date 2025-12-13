@@ -23,8 +23,6 @@ async fn execute_sql(state: State<'_, AppState>, sql: String) -> Result<String, 
     if sql.trim().to_uppercase().starts_with("SELECT") {
         let mut rows = db.query(&sql, ()).await.map_err(|e| e.to_string())?;
 
-        // CORRECCIÓN: Definimos explícitamente el tipo del Vector
-        // Decimos que va a contener valores JSON genéricos
         let results: Vec<serde_json::Value> = Vec::new();
 
         while let Ok(Some(row)) = rows.next().await {

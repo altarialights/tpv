@@ -4,11 +4,15 @@ import Account from "../components/layoutComponent/Account";
 
 function layout({ children }: { children: React.ReactNode }) {
     return (
-        <div>
-            <NavBar rol="admin" />
-            <Account rol="admin" />
-            <main>{children}</main>
-        </div>
+        <>
+            <div className="flex">
+                <div className="">
+                    <NavBar rol="admin" />
+                    <Account rol="admin" />
+                </div>
+                <main className='w-screen h-screen'>{children}</main>
+            </div>
+        </>
     );
 }
 

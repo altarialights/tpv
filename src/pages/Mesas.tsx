@@ -1,6 +1,6 @@
 function Mesas() {
 	return (
-		<div>laksdflñajsdñfljksñlfkjañlsdf</div>
+		<div className='w-full h-full bg-gris'>laksdflñajsdñfljksñlfkjañlsdf</div>
 	)
 }
 
