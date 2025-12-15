@@ -24,17 +24,17 @@ function NavBar({ rol }: { rol: string }) {
         return (
             <section className={`flex flex-col h-screen gap-3 transition-all duration-500 ${open ? "w-60" : "w-12"}`}>
                 <header className="flex items-center p-2 justify-between w-full">
-                    <img src={Logo} className={`size-8 ${open ? "" : "hidden"}`} />
+                    <img src={Logo} className={`size-8 cursor-pointer ${open ? "" : "hidden"}`} />
                     <MenuOpen
                         width={32}
                         height={32}
-                        className={open ? "hidden" : ""}
+                        className={`cursor-pointer ${open ? "hidden" : ""}`}
                         onClick={actualizarApertura}
                     />
                     <MenuClose
                         width={32}
                         height={32}
-                        className={open ? "" : "hidden"}
+                        className={`cursor-pointer ${open ? "" : "hidden"}`}
                         onClick={actualizarApertura}
                     />
                 </header>

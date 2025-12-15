@@ -10,7 +10,7 @@ function layout({ children }: { children: React.ReactNode }) {
                     <NavBar rol="admin" />
                     <Account rol="admin" />
                 </div>
-                <main className='w-screen h-screen'>{children}</main>
+                <main className='w-screen h-screen bg-gris'>{children}</main>
             </div>
         </>
     );
