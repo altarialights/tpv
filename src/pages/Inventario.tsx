@@ -1,13 +1,14 @@
 import Category from "../components/InventaryComponents/Category";
 import ListProducts from "../components/InventaryComponents/ListProducts";
 import ItemListProduct from "../components/InventaryComponents/ItemListProduct";
+import { Link, To } from "react-router-dom";
 
 function Inventario() {
 	return (
 		<div className="w-full min-h-full bg-gris flex flex-col mt-5 pb-5 gap-4 items-center">
 			<div className="flex gap-10">
 				<h2 className="text-2xl font-bold">INVENTARIO (CATEGORÍAS)</h2>
-				<button className="border-2 border-verde rounded-xl px-3 text-verde cursor-pointer">+ AÑADIR NUEVA CATEGORÍA</button>
+				<Link to="/Inventario/nueva-categoria"><button className="border-2 border-verde rounded-xl px-3 text-verde cursor-pointer">+ AÑADIR NUEVA CATEGORÍA</button></Link>
 			</div>
 
 			<div className="flex gap-2 w-full justify-center">

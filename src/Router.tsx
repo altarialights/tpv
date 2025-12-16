@@ -9,21 +9,25 @@ import Clientes from './pages/Clientes';
 import Estadisticas from './pages/Estadisticas';
 import Configuracion from './pages/Configuracion';
 import Logout from './pages/Logout';
+import AddCategory from './pages/inventoryPages/AddCategory';
+import Product from './pages/inventoryPages/Product';
 
 export const router = createBrowserRouter([
 	{
 		path: "/",
 		element: <App />,
 		children: [
-			{ path: "/Mesas", element: <Mesas /> },
-			{ path: "/Inventario", element: <Inventario /> },
-			{ path: "/Reservas", element: <Reservas /> },
-			{ path: "/Trabajadores", element: <Trabajadores /> },
-			{ path: '/Proveedores', element: <Proveedores /> },
-			{ path: '/Clientes', element: <Clientes /> },
-			{ path: '/Estadisticas', element: <Estadisticas /> },
-			{ path: '/Configuracion', element: <Configuracion /> },
-			{ path: '/Logout', element: <Logout /> }
+			{ path: "Mesas", element: <Mesas /> },
+			{ path: "Inventario", element: <Inventario /> },
+			{ path: "Inventario/nueva-categoria", element: <AddCategory /> },
+			{ path: "Inventario/producto", element: <Product /> },
+			{ path: "Reservas", element: <Reservas /> },
+			{ path: "Trabajadores", element: <Trabajadores /> },
+			{ path: "Proveedores", element: <Proveedores /> },
+			{ path: "Clientes", element: <Clientes /> },
+			{ path: "Estadisticas", element: <Estadisticas /> },
+			{ path: "Configuracion", element: <Configuracion /> },
+			{ path: "Logout", element: <Logout /> }
 		]
 	}
 ]);
