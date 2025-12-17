@@ -1,14 +1,46 @@
 import Category from "../components/InventaryComponents/Category";
 import ListProducts from "../components/InventaryComponents/ListProducts";
 import ItemListProduct from "../components/InventaryComponents/ItemListProduct";
-import { Link, To } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { ReactComponent as LapizSVG } from "../assets/svg/LapizSVG.svg"
 
 function Inventario() {
 	return (
 		<div className="w-full min-h-full bg-gris flex flex-col mt-5 pb-5 gap-4 items-center">
 			<div className="flex gap-10">
 				<h2 className="text-2xl font-bold">INVENTARIO (CATEGORÍAS)</h2>
-				<Link to="/Inventario/nueva-categoria"><button className="border-2 border-verde rounded-xl px-3 text-verde cursor-pointer">+ AÑADIR NUEVA CATEGORÍA</button></Link>
+				<Link to="/Inventario/nueva-categoria">
+					<div
+						className="
+							group
+							flex gap-2 mb-5 w-fit items-center
+							cursor-pointer
+							border-2 border-verde
+							rounded-xl
+							px-3 py-1
+							text-verde
+							transition-all duration-300 ease-out
+							hover:bg-verde
+							hover:text-white
+							hover:shadow-md
+							"
+					>
+						<LapizSVG
+							width={24}
+							height={24}
+							className="
+								transition-transform duration-300
+								group-hover:-translate-y-1
+								group-hover:rotate-6
+							"
+						/>
+
+						<p className="font-medium">
+							Añadir Nueva Categoría
+						</p>
+					</div>
+				</Link>
+
 			</div>
 
 			<div className="flex gap-2 w-full justify-center">

@@ -1,6 +1,8 @@
 function Home() {
 	return (
-		<div className="w-full h-full bg-gris">Home</div>
+		<div className="w-full h-full bg-gris">
+
+		</div>
 	)
 }
 
