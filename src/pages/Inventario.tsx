@@ -70,6 +70,10 @@ function Inventario() {
 					grid-cols-[repeat(auto-fill,minmax(200px,max-content))]
 					self-center
 					justify-between
+					bg-blanco
+					rounded-xl
+					p-4
+					shadow-xs
 				"
 			>
 				{/* Aquí van las categorias*/}
