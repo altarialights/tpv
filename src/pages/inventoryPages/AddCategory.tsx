@@ -1,36 +1,36 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { db } from '../../lib/db'
+import { db } from "../../lib/db";
 
 function AddCategory() {
     const [name, setName] = useState("");
     const [image, setImage] = useState<File | null>(null);
 
-    const ruta = ('/imagens/inventario/categorias')
-
+    const ruta = "/imagens/inventario/categorias";
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!name || !image) return;
 
-        const uuid = crypto.randomUUID()
-        const extension = image!!.name.split('.').pop() || 'png';
-        const nombreCompleto = uuid + extension
+        const uuid = crypto.randomUUID();
+        const extension = image!!.name.split(".").pop() || "png";
+        const nombreCompleto = uuid + "." + extension;
 
-        const reader = new FileReader
-        await reader.readAsDataURL(image)
-        const base64 = reader.result
+        const reader = new FileReader();
+        await reader.readAsDataURL(image);
+        const base64 = reader.result;
 
         const imagen = {
             name: uuid,
             extension: extension,
             base64: base64,
             ruta: ruta,
-        }
+        };
 
-
-        const sql: String = `INSERT INTO Categorias_Producto (Nombre, Nombre_Imagen, Ruta_Imagen) VALUES ('${name}', '${nombreCompleto}', '${ruta}');`
-        await db.execute(sql).then(() => { console.log('Categoría creada') })
+        const sql: String = `INSERT INTO Categorias_Producto (Nombre, Nombre_Imagen, Ruta_Imagen) VALUES ('${name}', '${nombreCompleto}', '${ruta}');`;
+        await db.execute(sql).then(() => {
+            console.log("Categoría creada");
+        });
 
         console.log({ name, image });
     };
@@ -71,7 +71,9 @@ function AddCategory() {
 
                 {/* Nombre */}
                 <div className="flex flex-col gap-1">
-                    <label className="font-semibold">Nombre de la categoría</label>
+                    <label className="font-semibold">
+                        Nombre de la categoría
+                    </label>
                     <input
                         type="text"
                         value={name}
@@ -83,7 +85,9 @@ function AddCategory() {
 
                 {/* Imagen personalizada */}
                 <div className="flex flex-col gap-2">
-                    <label className="font-semibold">Imagen de la categoría</label>
+                    <label className="font-semibold">
+                        Imagen de la categoría
+                    </label>
 
                     <input
                         id="imageUpload"

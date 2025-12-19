@@ -3,6 +3,7 @@ import ListProducts from "../components/InventaryComponents/ListProducts";
 import ItemListProduct from "../components/InventaryComponents/ItemListProduct";
 import { Link } from "react-router-dom";
 import { ReactComponent as LapizSVG } from "../assets/svg/LapizSVG.svg";
+import { db } from "../lib/db";
 
 function Inventario() {
     return (
