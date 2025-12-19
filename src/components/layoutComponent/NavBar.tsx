@@ -23,16 +23,14 @@ function NavBar({ rol }: { rol: string }) {
     if (rol == "admin") {
         return (
             <section
-                className={`flex flex-col h-screen gap-3 transition-all duration-500 bg-blanco sticky top-0 ${
-                    open ? "w-60" : "w-12"
-                }`}
+                className={`flex flex-col h-full gap-3 transition-all duration-500 bg-blanco sticky top-0 ${open ? "w-60" : "w-12"
+                    }`}
             >
                 <header className="flex items-center p-2 justify-between w-full">
                     <img
                         src={Logo}
-                        className={`size-8 cursor-pointer ${
-                            open ? "" : "hidden"
-                        }`}
+                        className={`size-8 cursor-pointer ${open ? "" : "hidden"
+                            }`}
                     />
                     <MenuOpen
                         width={32}

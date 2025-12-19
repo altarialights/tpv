@@ -1,10 +1,6 @@
--- 1. Tablas de Seguridad y Usuarios
-CREATE TABLE Roles (
-    ID_Rol INTEGER PRIMARY KEY AUTOINCREMENT,
-    Nombre_Rol TEXT NOT NULL UNIQUE -- e.g., 'Administrador', 'Camarero'
-);
+-- 1. Tablas de Seguridad y Usuarios CREATE TABLE IF NOT EXISTS Roles ( ID_Rol INTEGER PRIMARY KEY AUTOINCREMENT, Nombre_Rol TEXT NOT NULL UNIQUE -- e.g., 'Administrador', 'Camarero' );
 
-CREATE TABLE Usuarios (
+CREATE TABLE IF NOT EXISTS Usuarios (
     ID_Usuario INTEGER PRIMARY KEY AUTOINCREMENT,
     ID_Rol INTEGER NOT NULL,
     Email TEXT NOT NULL UNIQUE,
@@ -16,7 +12,7 @@ CREATE TABLE Usuarios (
 );
 
 -- 2. Tablas de Personal y Horarios (Trabajadores)
-CREATE TABLE Trabajadores (
+CREATE TABLE IF NOT EXISTS Trabajadores (
     ID_Trabajador INTEGER PRIMARY KEY AUTOINCREMENT,
     ID_Usuario INTEGER UNIQUE NOT NULL, -- Relación 1:1 con Usuarios
     DNI TEXT UNIQUE,
@@ -26,14 +22,14 @@ CREATE TABLE Trabajadores (
     FOREIGN KEY (ID_Usuario) REFERENCES Usuarios(ID_Usuario)
 );
 
-CREATE TABLE Turnos (
+CREATE TABLE IF NOT EXISTS Turnos (
     ID_Turno INTEGER PRIMARY KEY AUTOINCREMENT,
     Nombre_Turno TEXT NOT NULL, -- e.g., 'Mañana', 'Noche'
     Hora_Inicio TIME,
     Hora_Fin TIME
 );
 
-CREATE TABLE Asignacion_Turnos (
+CREATE TABLE IF NOT EXISTS Asignacion_Turnos (
     ID_Asignacion INTEGER PRIMARY KEY AUTOINCREMENT,
     ID_Trabajador INTEGER NOT NULL,
     Fecha DATE NOT NULL,
@@ -44,14 +40,14 @@ CREATE TABLE Asignacion_Turnos (
 );
 
 -- 3. Tablas de Inventario y Productos
-CREATE TABLE Categorias_Producto (
+CREATE TABLE IF NOT EXISTS Categorias_Producto (
     ID_Categoria INTEGER PRIMARY KEY AUTOINCREMENT,
     Nombre TEXT NOT NULL UNIQUE,
     Nombre_Imagen TEXT,
     Ruta_Imagen TEXT
 );
 
-CREATE TABLE Productos (
+CREATE TABLE IF NOT EXISTS Productos (
     ID_Producto INTEGER PRIMARY KEY AUTOINCREMENT,
     ID_Categoria INTEGER NOT NULL,
     Nombre TEXT NOT NULL,
@@ -63,12 +59,12 @@ CREATE TABLE Productos (
 );
 
 -- 4. Tablas de Reservas y Mesas
-CREATE TABLE Zonas (
+CREATE TABLE IF NOT EXISTS Zonas (
     ID_Zona INTEGER PRIMARY KEY AUTOINCREMENT,
     Nombre_Zona TEXT NOT NULL UNIQUE -- e.g., 'Terraza', 'Principal'
 );
 
-CREATE TABLE Mesas (
+CREATE TABLE IF NOT EXISTS Mesas (
     ID_Mesa INTEGER PRIMARY KEY AUTOINCREMENT,
     ID_Zona INTEGER NOT NULL,
     Numero_Mesa TEXT NOT NULL UNIQUE,
@@ -78,7 +74,7 @@ CREATE TABLE Mesas (
     FOREIGN KEY (ID_Zona) REFERENCES Zonas(ID_Zona)
 );
 
-CREATE TABLE Reservas (
+CREATE TABLE IF NOT EXISTS Reservas (
     ID_Reserva INTEGER PRIMARY KEY AUTOINCREMENT,
     ID_Mesa INTEGER NOT NULL,
     Fecha_Reserva DATE NOT NULL,
@@ -92,7 +88,7 @@ CREATE TABLE Reservas (
 );
 
 -- 5. Tablas de Clientes, Proveedores y Marketing
-CREATE TABLE Clientes (
+CREATE TABLE IF NOT EXISTS Clientes (
     ID_Cliente INTEGER PRIMARY KEY AUTOINCREMENT,
     Nombre TEXT NOT NULL,
     Apellido TEXT,
@@ -102,7 +98,7 @@ CREATE TABLE Clientes (
     Total_Gastado REAL DEFAULT 0
 );
 
-CREATE TABLE Proveedores (
+CREATE TABLE IF NOT EXISTS Proveedores (
     ID_Proveedor INTEGER PRIMARY KEY AUTOINCREMENT,
     Nombre_Empresa TEXT NOT NULL,
     Contacto TEXT,
@@ -113,7 +109,7 @@ CREATE TABLE Proveedores (
 );
 
 -- 6. Tablas de Facturación y Cuentas
-CREATE TABLE Comandas (
+CREATE TABLE IF NOT EXISTS Comandas (
     ID_Comanda INTEGER PRIMARY KEY AUTOINCREMENT,
     ID_Mesa INTEGER NOT NULL,
     ID_Trabajador INTEGER, -- Camarero que abre la comanda
@@ -125,7 +121,7 @@ CREATE TABLE Comandas (
     FOREIGN KEY (ID_Trabajador) REFERENCES Trabajadores(ID_Trabajador)
 );
 
-CREATE TABLE Detalle_Comanda (
+CREATE TABLE IF NOT EXISTS Detalle_Comanda (
     ID_Detalle INTEGER PRIMARY KEY AUTOINCREMENT,
     ID_Comanda INTEGER NOT NULL,
     ID_Producto INTEGER NOT NULL,
@@ -136,7 +132,7 @@ CREATE TABLE Detalle_Comanda (
     FOREIGN KEY (ID_Producto) REFERENCES Productos(ID_Producto)
 );
 
-CREATE TABLE Facturas (
+CREATE TABLE IF NOT EXISTS Facturas (
     ID_Factura INTEGER PRIMARY KEY AUTOINCREMENT,
     ID_Comanda INTEGER UNIQUE NOT NULL,
     ID_Cliente INTEGER, -- Opcional, si el cliente pide factura
@@ -149,7 +145,7 @@ CREATE TABLE Facturas (
     FOREIGN KEY (ID_Cliente) REFERENCES Clientes(ID_Cliente)
 );
 
-CREATE TABLE Cuentas_Gastos (
+CREATE TABLE IF NOT EXISTS Cuentas_Gastos (
     ID_Gasto INTEGER PRIMARY KEY AUTOINCREMENT,
     Fecha DATE NOT NULL,
     Concepto TEXT NOT NULL,
