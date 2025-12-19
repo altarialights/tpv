@@ -14,13 +14,20 @@ function ListClients({
             <div className="flex flex-col gap-2">
                 {children || "No hay productos"}
             </div>
-            <div className="w-full flex justify-end mt-4">
+            <div className="w-full flex justify-end mt-4 gap-4">
                 <button
                     className="border-2 border-morado rounded-xl px-3 py-1 text-morado cursor-pointer 
                    transition-all duration-300 ease-in-out
                    hover:bg-morado hover:text-white"
                 >
                     Cargar Más
+                </button>
+                <button
+                    className="border-2 border-azul rounded-xl px-3 py-1 text-azul cursor-pointer 
+                   transition-all duration-300 ease-in-out
+                   hover:bg-azul hover:text-white"
+                >
+                    Enviar Publicidad
                 </button>
             </div>
         </div>
