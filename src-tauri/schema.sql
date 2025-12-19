@@ -46,7 +46,9 @@ CREATE TABLE Asignacion_Turnos (
 -- 3. Tablas de Inventario y Productos
 CREATE TABLE Categorias_Producto (
     ID_Categoria INTEGER PRIMARY KEY AUTOINCREMENT,
-    Nombre TEXT NOT NULL UNIQUE
+    Nombre TEXT NOT NULL UNIQUE,
+    Nombre_Imagen TEXT,
+    Ruta_Imagen TEXT
 );
 
 CREATE TABLE Productos (

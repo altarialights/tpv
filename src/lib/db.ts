@@ -2,7 +2,7 @@ import { invoke } from '@tauri-apps/api/core';
 
 export const db = {
 	// Para las consultas que devuelven datos
-	async select<T>(query: string): Promise<T[]> {
+	async select<T>(query: String): Promise<T[]> {
 		try {
 			const response = await invoke<string>('execute_sql', { sql: query });
 
@@ -16,7 +16,7 @@ export const db = {
 	},
 
 	// Para las consultas que no devuelven datos (update, delete, etc)
-	async execute(query: string): Promise<boolean> {
+	async execute(query: String): Promise<boolean> {
 		try {
 			const response = await invoke<string>('execute_sql', { sql: query });
 			return response === 'OK';
