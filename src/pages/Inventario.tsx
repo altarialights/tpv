@@ -2,18 +2,21 @@ import Category from "../components/InventaryComponents/Category";
 import ListProducts from "../components/InventaryComponents/ListProducts";
 import ItemListProduct from "../components/InventaryComponents/ItemListProduct";
 import { Link } from "react-router-dom";
-import { ReactComponent as LapizSVG } from "../assets/svg/LapizSVG.svg"
+import { ReactComponent as LapizSVG } from "../assets/svg/LapizSVG.svg";
 
 function Inventario() {
-	return (
-		<div className="w-full min-h-full bg-gris flex flex-col mt-5 pb-5 gap-4 items-center">
-			<div className="flex gap-10">
-				<h2 className="text-2xl font-bold">INVENTARIO (CATEGORÍAS)</h2>
-				<Link to="/Inventario/nueva-categoria">
-					<div
-						className="
+    return (
+        <div className="w-full min-h-full bg-gris flex flex-col p-10 pt-5 gap-4 items-center">
+            <div className="flex flex-col gap-4 bg-blanco w-full p-4 rounded-xl shadow-xs justify-center items-center">
+                <div className="w-full flex justify-center gap-4 items-center">
+                    <h2 className="text-2xl font-bold">
+                        INVENTARIO (CATEGORÍAS)
+                    </h2>
+                    <Link to="/Inventario/nueva-categoria">
+                        <div
+                            className="
 							group
-							flex gap-2 mb-5 w-fit items-center
+							flex gap-2 w-fit items-center
 							cursor-pointer
 							border-2 border-verde
 							rounded-xl
@@ -24,48 +27,48 @@ function Inventario() {
 							hover:text-white
 							hover:shadow-md
 							"
-					>
-						<LapizSVG
-							width={24}
-							height={24}
-							className="
+                        >
+                            <LapizSVG
+                                width={24}
+                                height={24}
+                                className="
 								transition-transform duration-300
 								group-hover:-translate-y-1
 								group-hover:rotate-6
 							"
-						/>
+                            />
 
-						<p className="font-medium">
-							Añadir Nueva Categoría
-						</p>
-					</div>
-				</Link>
+                            <p className="font-medium">
+                                Añadir Nueva Categoría
+                            </p>
+                        </div>
+                    </Link>
+                </div>
 
-			</div>
-
-			<div className="flex gap-2 w-full justify-center">
-				<input
-					className="
-							border
+                <div className="flex gap-2 w-full justify-center">
+                    <input
+                        className="
+							border-2
 							border-negro
 							rounded-xl
 							pl-3 pr-15 py-1
 							w-[50%]
-							focus:border-morado
+							
 							focus:ring-0
 							focus:outline-none
 						"
-					type="text"
-					placeholder="BUSCAR..."
-				/>
+                        type="text"
+                        placeholder="BUSCAR..."
+                    />
 
-				<button>Buscar</button>
-			</div>
+                    <button>Buscar</button>
+                </div>
+            </div>
 
-			<div
-				className="
+            <div
+                className="
 					grid
-					w-[90%]
+					w-full
 					gap-4
 					grid-cols-[repeat(auto-fill,minmax(200px,max-content))]
 					self-center
@@ -75,38 +78,84 @@ function Inventario() {
 					p-4
 					shadow-xs
 				"
-			>
-				{/* Aquí van las categorias*/}
+            >
+                {/* Aquí van las categorias*/}
 
-				<Category img="bebidas.webp" name="Bebidas" />
-				<Category img="comidas.png" name="Comidas" />
-				<Category img="bebidas.webp" name="Bebidas" />
-				<Category img="bebidas.webp" name="Bebidas" />
-				<Category img="bebidas.webp" name="Bebidas" />
-				<Category img="bebidas.webp" name="Bebidas" />
+                <Category img="bebidas.webp" name="Bebidas" />
+                <Category img="comidas.png" name="Comidas" />
+                <Category img="bebidas.webp" name="Bebidas" />
+                <Category img="bebidas.webp" name="Bebidas" />
+                <Category img="bebidas.webp" name="Bebidas" />
+                <Category img="bebidas.webp" name="Bebidas" />
+            </div>
 
-			</div>
+            <ListProducts title="MÁS PRÓXIMO A CADUCAR">
+                {/* Aquí van los productos que están más próximos a caducar */}
+                <ItemListProduct
+                    className="font-bold"
+                    cantidad="Cantidad"
+                    nombre="Nombre"
+                    caducidad="Caducidad"
+                    lote="Lote"
+                    precio="Precio"
+                />
+                <ItemListProduct
+                    cantidad="Cantidad"
+                    nombre="Nombre"
+                    caducidad="Caducidad"
+                    lote="Lote"
+                    precio="Precio"
+                />
+                <ItemListProduct
+                    cantidad="Cantidad"
+                    nombre="Nombre"
+                    caducidad="Caducidad"
+                    lote="Lote"
+                    precio="Precio"
+                />
+                <ItemListProduct
+                    cantidad="Cantidad"
+                    nombre="Nombre"
+                    caducidad="Caducidad"
+                    lote="Lote"
+                    precio="Precio"
+                />
+                <ItemListProduct
+                    cantidad="Cantidad"
+                    nombre="Nombre"
+                    caducidad="Caducidad"
+                    lote="Lote"
+                    precio="Precio"
+                />
+                <ItemListProduct
+                    cantidad="Cantidad"
+                    nombre="Nombre"
+                    caducidad="Caducidad"
+                    lote="Lote"
+                    precio="Precio"
+                />
+                <ItemListProduct
+                    cantidad="Cantidad"
+                    nombre="Nombre"
+                    caducidad="Caducidad"
+                    lote="Lote"
+                    precio="Precio"
+                />
+            </ListProducts>
 
-
-
-			<ListProducts title="MÁS PRÓXIMO A CADUCAR">
-				{/* Aquí van los productos que están más próximos a caducar */}
-				<ItemListProduct className="font-bold" cantidad="Cantidad" nombre="Nombre" caducidad="Caducidad" lote="Lote" precio="Precio" />
-				<ItemListProduct cantidad="Cantidad" nombre="Nombre" caducidad="Caducidad" lote="Lote" precio="Precio" />
-				<ItemListProduct cantidad="Cantidad" nombre="Nombre" caducidad="Caducidad" lote="Lote" precio="Precio" />
-				<ItemListProduct cantidad="Cantidad" nombre="Nombre" caducidad="Caducidad" lote="Lote" precio="Precio" />
-				<ItemListProduct cantidad="Cantidad" nombre="Nombre" caducidad="Caducidad" lote="Lote" precio="Precio" />
-				<ItemListProduct cantidad="Cantidad" nombre="Nombre" caducidad="Caducidad" lote="Lote" precio="Precio" />
-				<ItemListProduct cantidad="Cantidad" nombre="Nombre" caducidad="Caducidad" lote="Lote" precio="Precio" />
-			</ListProducts>
-
-			<ListProducts title="MENOS CANTIDAD EN INVENTARIO">
-				{/* Aquí van los productos que menos cantidad haya */}
-				<ItemListProduct className="font-bold" cantidad="Cantidad" nombre="Nombre" caducidad="Caducidad" lote="Lote" precio="Precio" />
-			</ListProducts>
-
-		</div>
-	)
+            <ListProducts title="MENOS CANTIDAD EN INVENTARIO">
+                {/* Aquí van los productos que menos cantidad haya */}
+                <ItemListProduct
+                    className="font-bold"
+                    cantidad="Cantidad"
+                    nombre="Nombre"
+                    caducidad="Caducidad"
+                    lote="Lote"
+                    precio="Precio"
+                />
+            </ListProducts>
+        </div>
+    );
 }
 
-export default Inventario
+export default Inventario;
