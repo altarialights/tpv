@@ -4,8 +4,35 @@ import ItemListProduct from "../components/InventaryComponents/ItemListProduct";
 import { Link } from "react-router-dom";
 import { ReactComponent as LapizSVG } from "../assets/svg/LapizSVG.svg";
 import { db } from "../lib/db";
+import { useState, useEffect } from 'react'
+
+interface Categoria {
+    ID_Categoria: number;
+    Nombre: string;
+    Nombre_Imagen: string;
+    Ruta_Imagen: string;
+}
 
 function Inventario() {
+    const [data, setData] = useState<Categoria[]>([])
+
+    useEffect(() => {
+        const cargarCategorias = async () => {
+            try {
+                const result = await db.select<Categoria>('SELECT * FROM Categorias_Producto ORDER BY Nombre ASC;');
+                if (result) {
+                    setData(result)
+                }
+
+                return result
+            } catch (error) {
+                console.error("Error cargando categorías:", error);
+            }
+        };
+        cargarCategorias()
+    }, [])
+
+
     return (
         <div className="w-full min-h-full bg-gris flex flex-col p-10 pt-5 gap-4 items-center">
             <div className="flex flex-col gap-4 bg-blanco w-full p-4 rounded-xl shadow-xs justify-center items-center">
@@ -80,14 +107,10 @@ function Inventario() {
 					shadow-xs
 				"
             >
-                {/* Aquí van las categorias*/}
 
-                <Category img="bebidas.webp" name="Bebidas" />
-                <Category img="comidas.png" name="Comidas" />
-                <Category img="bebidas.webp" name="Bebidas" />
-                <Category img="bebidas.webp" name="Bebidas" />
-                <Category img="bebidas.webp" name="Bebidas" />
-                <Category img="bebidas.webp" name="Bebidas" />
+                {data.map((item) => {
+                    return <Category img={item.Ruta_Imagen + item.Nombre_Imagen} name={item.Nombre} key={item.ID_Categoria} />
+                })}
             </div>
 
             <ListProducts title="MÁS PRÓXIMO A CADUCAR">
