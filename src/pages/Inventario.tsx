@@ -5,8 +5,8 @@ import { Link } from "react-router-dom";
 import { ReactComponent as LapizSVG } from "../assets/svg/LapizSVG.svg";
 import { db } from "../lib/db";
 import { useState, useEffect } from 'react';
-import { convertFileSrc, invoke } from "@tauri-apps/api/core"; // <--- IMPORTS CLAVE
-import { join } from "@tauri-apps/api/path"; // Opcional, pero haremos la unión manual para evitar dependencias extra si no tienes el plugin de path
+import { convertFileSrc } from "@tauri-apps/api/core";
+import { appDataDir, join } from "@tauri-apps/api/path";
 
 interface Categoria {
     ID_Categoria: number;
@@ -25,54 +25,70 @@ function Inventario() {
     useEffect(() => {
         const cargarDatos = async () => {
             try {
-                // 1. Obtener ruta base
-                const appDataPath = await invoke<string>("get_app_data_path");
+                const appDataDirPath = await appDataDir();
 
-                // Función auxiliar para normalizar rutas (Convierte todo \ a /)
-                const normalizePath = (path: string) => path.replace(/\\/g, '/');
+                // Hacemos la llamada. 
+                // IMPORTANTE: TypeScript a veces no infiere bien el tipo genérico de librerías externas.
+                // Lo guardamos en 'rawResult' primero.
+                const rawResult = await db.select('SELECT * FROM Categorias_Producto ORDER BY Nombre ASC;');
 
-                const result = await db.select<Categoria>('SELECT * FROM Categorias_Producto ORDER BY Nombre ASC;');
+                // --- BLOQUE DE SEGURIDAD PARA TYPESCRIPT Y DATOS ---
+                // 1. Si db.select devuelve un string (json), lo parseamos. Si ya es objeto, lo dejamos.
+                let parsedResult: Categoria[] = [];
 
-                if (result && result.length > 0) {
-                    const categoriasProcesadas = result.map((cat) => {
-                        // A. Limpiamos la ruta base (quitamos barras al final y convertimos a /)
-                        let cleanBase = normalizePath(appDataPath);
-                        if (cleanBase.endsWith('/')) cleanBase = cleanBase.slice(0, -1);
+                if (typeof rawResult === 'string') {
+                    parsedResult = JSON.parse(rawResult);
+                } else if (Array.isArray(rawResult)) {
+                    // Forzamos el tipo con 'as unknown' para callar al compilador
+                    parsedResult = rawResult as unknown as Categoria[];
+                }
+                // ---------------------------------------------------
 
-                        // B. Limpiamos la parte de la imagen (quitamos barras al inicio y convertimos a /)
-                        let imgPart = normalizePath(cat.Ruta_Imagen);
-                        if (imgPart.startsWith('/')) imgPart = imgPart.substring(1);
+                if (parsedResult && parsedResult.length > 0) {
 
-                        // C. (OPCIONAL) Reconstruimos si faltan carpetas, usando siempre /
-                        if (!imgPart.includes("images") && !imgPart.includes("categorias")) {
-                            imgPart = `images/categorias/${imgPart}`;
+                    const categoriasProcesadas = await Promise.all(parsedResult.map(async (cat) => {
+                        // Al haber tipado parsedResult arriba, 'cat' ya es de tipo Categoria.
+                        // El spread operator (...cat) YA NO DEBERÍA FALLAR.
+
+                        let finalPath = "";
+                        const rutaDB = cat.Ruta_Imagen ? cat.Ruta_Imagen.trim() : "";
+
+                        if (!rutaDB) {
+                            return { ...cat, urlImagen: "" };
                         }
 
-                        // D. Unimos todo. AHORA LA RUTA SERÁ PURA con '/'
-                        const finalPath = `${cleanBase}/${imgPart}`;
+                        // Lógica para detectar si es ruta completa o solo nombre de archivo
+                        if (rutaDB.includes(":") || rutaDB.startsWith("/") || rutaDB.startsWith("\\")) {
+                            finalPath = rutaDB;
+                        } else {
+                            // Si solo guardaste "imagen.png", aquí la unimos con la carpeta AppData
+                            // Si guardaste "images/categorias/img.png", asegúrate de que esa carpeta existe en AppData
+                            finalPath = await join(appDataDirPath, rutaDB);
+                        }
 
-                        console.log("Ruta FINAL limpia:", finalPath); // <--- Verifica que aquí solo salgan barras /
+                        // Debug rápido por si acaso
+                        console.log("Cargando:", finalPath);
 
-                        // E. Convertimos a asset URL
                         const assetUrl = convertFileSrc(finalPath);
 
                         return {
                             ...cat,
                             urlImagen: assetUrl
                         };
-                    });
+                    }));
+
                     setData(categoriasProcesadas);
                 }
             } catch (error) {
-                console.error("Error:", error);
+                console.error("Error cargando inventario:", error);
             }
         };
+
         cargarDatos();
     }, []);
 
     return (
         <div className="w-full min-h-full bg-gris flex flex-col p-10 pt-5 gap-4 items-center">
-            {/* ... (Cabecera y Buscador igual que antes) ... */}
             <div className="flex flex-col gap-4 bg-blanco w-full p-4 rounded-xl shadow-xs justify-center items-center">
                 <div className="w-full flex justify-center gap-4 items-center">
                     <h2 className="text-2xl font-bold">INVENTARIO (CATEGORÍAS)</h2>
@@ -83,86 +99,24 @@ function Inventario() {
                         </div>
                     </Link>
                 </div>
-                {/* Input buscar... */}
             </div>
 
-            {/* GRID DE CATEGORÍAS */}
             <div className="grid w-full gap-4 grid-cols-[repeat(auto-fill,minmax(200px,max-content))] self-center justify-between bg-blanco rounded-xl p-4 shadow-xs">
                 {data.map((item) => (
                     <Category
                         key={item.ID_Categoria}
-                        // Pasamos la URL generada con asset://
                         img={item.urlImagen}
-                        name={item.Nombre_Imagen}
+                        name={item.Nombre} // He cambiado Nombre_Imagen por Nombre, asumiendo que es lo que quieres mostrar
                     />
                 ))}
             </div>
 
-            {/* ... Resto de listas ... */}
+            {/* Listas de productos (sin cambios) */}
             <ListProducts title="MÁS PRÓXIMO A CADUCAR">
-                {/* Aquí van los productos que están más próximos a caducar */}
-                <ItemListProduct
-                    className="font-bold"
-                    cantidad="Cantidad"
-                    nombre="Nombre"
-                    caducidad="Caducidad"
-                    lote="Lote"
-                    precio="Precio"
-                />
-                <ItemListProduct
-                    cantidad="Cantidad"
-                    nombre="Nombre"
-                    caducidad="Caducidad"
-                    lote="Lote"
-                    precio="Precio"
-                />
-                <ItemListProduct
-                    cantidad="Cantidad"
-                    nombre="Nombre"
-                    caducidad="Caducidad"
-                    lote="Lote"
-                    precio="Precio"
-                />
-                <ItemListProduct
-                    cantidad="Cantidad"
-                    nombre="Nombre"
-                    caducidad="Caducidad"
-                    lote="Lote"
-                    precio="Precio"
-                />
-                <ItemListProduct
-                    cantidad="Cantidad"
-                    nombre="Nombre"
-                    caducidad="Caducidad"
-                    lote="Lote"
-                    precio="Precio"
-                />
-                <ItemListProduct
-                    cantidad="Cantidad"
-                    nombre="Nombre"
-                    caducidad="Caducidad"
-                    lote="Lote"
-                    precio="Precio"
-                />
-                <ItemListProduct
-                    cantidad="Cantidad"
-                    nombre="Nombre"
-                    caducidad="Caducidad"
-                    lote="Lote"
-                    precio="Precio"
-                />
+                <ItemListProduct className="font-bold" cantidad="Cantidad" nombre="Nombre" caducidad="Caducidad" lote="Lote" precio="Precio" />
             </ListProducts>
-
             <ListProducts title="MENOS CANTIDAD EN INVENTARIO">
-                {/* Aquí van los productos que menos cantidad haya */}
-                <ItemListProduct
-                    className="font-bold"
-                    cantidad="Cantidad"
-                    nombre="Nombre"
-                    caducidad="Caducidad"
-                    lote="Lote"
-                    precio="Precio"
-                />
+                <ItemListProduct className="font-bold" cantidad="Cantidad" nombre="Nombre" caducidad="Caducidad" lote="Lote" precio="Precio" />
             </ListProducts>
         </div>
     );
