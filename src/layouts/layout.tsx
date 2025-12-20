@@ -9,7 +9,6 @@ import PantallaCompleta from '../assets/svg/PantallaCompleta.svg'
 
 
 function layout({ children }: { children: React.ReactNode }) {
-    console.log(CerrarVentana)
     const ventana = getCurrentWindow()
     return (
         <>
@@ -21,9 +20,9 @@ function layout({ children }: { children: React.ReactNode }) {
                     </div>
                     <div>
                         <div className='flex gap-4 w-fit p-1 px-2'>
-                            <button className='hover:scale-140 transition-all' onClick={async () => await ventana.minimize()}><img src={MinimizarVentana} className='size-8' /></button>
-                            <button className='hover:scale-120 transition-all' onClick={async () => await ventana.toggleMaximize()}><img src={PantallaCompleta} className='size-5' /></button>
-                            <button className='hover:scale-120 transition-all' onClick={async () => await ventana.close()}><img src={CerrarVentana} className='size-8' /></button>
+                            <button className='hover:scale-140 transition-all cursor-pointer' onClick={async () => await ventana.minimize()}><img src={MinimizarVentana} className='size-8' /></button>
+                            <button className='hover:scale-120 transition-all cursor-pointer' onClick={async () => await ventana.toggleMaximize()}><img src={PantallaCompleta} className='size-5' /></button>
+                            <button className='hover:scale-120 transition-all cursor-pointer' onClick={async () => await ventana.close()}><img src={CerrarVentana} className='size-8' /></button>
                         </div>
                     </div>
                 </div>

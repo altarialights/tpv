@@ -55,6 +55,8 @@ CREATE TABLE IF NOT EXISTS Productos (
     Stock_Actual REAL DEFAULT 0,
     Stock_Minimo REAL DEFAULT 0,
     Unidad_Medida TEXT,
+    Nombre_Imagen TEXT,
+    Ruta_Imagen TEXT,
     FOREIGN KEY (ID_Categoria) REFERENCES Categorias_Producto(ID_Categoria)
 );
 

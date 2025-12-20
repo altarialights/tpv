@@ -1,44 +1,73 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../lib/db";
+import { invoke } from "@tauri-apps/api/core";
+
+// Función auxiliar para convertir File a Base64 usando Promesas
+const convertirABase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = (error) => reject(error);
+    });
+};
 
 function AddCategory() {
     const [name, setName] = useState("");
     const [image, setImage] = useState<File | null>(null);
+    const [loading, setLoading] = useState(false); // Para evitar doble clic
 
-    const ruta = "/imagens/inventario/categorias";
+    const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!name || !image) return;
 
-        const uuid = crypto.randomUUID();
-        const extension = image!!.name.split(".").pop() || "png";
-        const nombreCompleto = uuid + "." + extension;
+        setLoading(true);
 
-        const reader = new FileReader();
-        await reader.readAsDataURL(image);
-        const base64 = reader.result;
+        try {
+            // 1. Preparar datos
+            const uuid = crypto.randomUUID();
+            const extension = image.name.split(".").pop() || "png";
+            const nombreArchivo = `${uuid}.${extension}`;
+            const subcarpeta = "categorias"; // Nombre físico de la carpeta
 
-        const imagen = {
-            name: uuid,
-            extension: extension,
-            base64: base64,
-            ruta: ruta,
-        };
+            // Ruta relativa completa para guardar en la BD (para usar luego en <img src>)
+            // Usamos '/' para que sea compatible web, Rust ya sabe manejarlo.
+            const rutaParaBD = `images/${subcarpeta}/${nombreArchivo}`;
 
-        const sql: String = `INSERT INTO Categorias_Producto (Nombre, Nombre_Imagen, Ruta_Imagen) VALUES ('${name}', '${nombreCompleto}', '${ruta}');`;
-        await db.execute(sql).then(() => {
-            console.log("Categoría creada");
-        });
+            // 2. Convertir imagen a Base64 correctamente
+            const base64String = await convertirABase64(image);
+            // Quitamos el prefijo "data:image/jpeg;base64," para enviar solo los datos a Rust
+            const base64Data = base64String.split(",")[1];
 
-        console.log({ name, image });
+            // 3. Guardar el archivo físico (Llamada a Rust)
+            // IMPORTANTE: Los nombres de las claves deben coincidir con los argumentos en main.rs
+            await invoke("save_image", {
+                subfolder: subcarpeta,
+                filename: nombreArchivo,
+                base64Data: base64Data, // En Rust le llamamos 'base64_data', Tauri mapea camelCase a snake_case automáticamente
+            });
+
+            // Usamos rutaParaBD para que apunte al archivo exacto, no solo a la carpeta
+            const sql = `INSERT INTO Categorias_Producto (Nombre, Nombre_Imagen, Ruta_Imagen) VALUES ('${name}', '${nombreArchivo}', '${rutaParaBD}');`;
+
+            await db.execute(sql);
+
+            console.log("Categoría e imagen guardadas con éxito");
+            navigate(-1);
+
+        } catch (error) {
+            console.error("Error crítico al guardar:", error);
+            alert("Hubo un error al guardar la categoría. Inténtalo de nuevo.");
+        } finally {
+            setLoading(false);
+        }
     };
-    const navigate = useNavigate();
 
     return (
         <div className="min-h-screen flex items-center justify-center relative">
-            {/* Botón volver */}
             <button
                 type="button"
                 onClick={() => navigate(-1)}
@@ -58,9 +87,9 @@ function AddCategory() {
                         d="M15 19l-7-7 7-7"
                     />
                 </svg>
-
                 <span>Volver atrás</span>
             </button>
+
             <form
                 onSubmit={handleSubmit}
                 className="bg-blanco p-6 rounded-xl shadow-md w-[400px] mx-auto flex flex-col gap-4"
@@ -80,10 +109,11 @@ function AddCategory() {
                         onChange={(e) => setName(e.target.value)}
                         className="border border-negro rounded-lg px-3 py-2"
                         required
+                        disabled={loading}
                     />
                 </div>
 
-                {/* Imagen personalizada */}
+                {/* Imagen */}
                 <div className="flex flex-col gap-2">
                     <label className="font-semibold">
                         Imagen de la categoría
@@ -97,15 +127,17 @@ function AddCategory() {
                             setImage(e.target.files ? e.target.files[0] : null)
                         }
                         className="hidden"
+                        disabled={loading}
                     />
 
                     <label
                         htmlFor="imageUpload"
-                        className="cursor-pointer border-2 border-dashed rounded-xl px-4 py-6 text-center border-verde"
+                        className={`cursor-pointer border-2 border-dashed rounded-xl px-4 py-6 text-center transition ${image ? "border-verde bg-green-50" : "border-verde"
+                            }`}
                     >
                         {image ? (
                             <span className="font-semibold text-verde">
-                                {/* {image.name} */}
+                                {image.name}
                             </span>
                         ) : (
                             <span className="text-negro">
@@ -117,9 +149,11 @@ function AddCategory() {
 
                 <button
                     type="submit"
-                    className="mt-4 cursor-pointer bg-verde text-blanco py-2 rounded-xl font-bold"
+                    disabled={loading}
+                    className={`mt-4 cursor-pointer text-blanco py-2 rounded-xl font-bold transition ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-verde hover:opacity-90"
+                        }`}
                 >
-                    Guardar categoría
+                    {loading ? "Guardando..." : "Guardar categoría"}
                 </button>
             </form>
         </div>
